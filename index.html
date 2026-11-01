@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Analytics Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js CDN for interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">📊</span>
+          <span class="logo-text">Analytix</span>
+        </div>
+        <button class="btn-close-sidebar" id="btnCloseSidebar" aria-label="Tutup Menu">✕</button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="active"><a href="#overview"><span class="icon">🏠</span> Ringkasan</a></li>
+          <li><a href="#analytics"><span class="icon">📈</span> Analitik</a></li>
+          <li><a href="#orders"><span class="icon">🛍️</span> Transaksi</a></li>
+          <li><a href="#customers"><span class="icon">👥</span> Pelanggan</a></li>
+          <li><a href="#settings"><span class="icon">⚙️</span> Pengaturan</a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="avatar">👨‍💻</div>
+          <div class="user-info">
+            <span class="user-name">Admin Demo</span>
+            <span class="user-role">Super Admin</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-toggle-sidebar" id="btnToggleSidebar" aria-label="Buka Menu">☰</button>
+          <div class="page-title">
+            <h1>Dashboard Analitik</h1>
+            <p class="subtitle" id="currentDateDisplay">Memuat tanggal...</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="globalSearch" placeholder="Cari transaksi, pelanggan...">
+          </div>
+
+          <button class="theme-toggle" id="themeToggle" title="Ganti Tema">
+            <span id="themeIcon">🌙</span>
+          </button>
+
+          <button class="btn-primary" id="btnOpenModal">
+            <span>+ Tambah Data</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <div class="content-body">
+        <!-- Quick Stats Cards -->
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon revenue-icon">💰</div>
+            <div class="stat-details">
+              <span class="stat-title">Total Pendapatan</span>
+              <h2 class="stat-value" id="statRevenue">Rp 48.750.000</h2>
+              <span class="stat-trend positive">↑ 12.5% <span>vs bln lalu</span></span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon visitors-icon">👀</div>
+            <div class="stat-details">
+              <span class="stat-title">Total Pengunjung</span>
+              <h2 class="stat-value" id="statVisitors">14.820</h2>
+              <span class="stat-trend positive">↑ 8.4% <span>vs bln lalu</span></span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon orders-icon">📦</div>
+            <div class="stat-details">
+              <span class="stat-title">Pesanan Baru</span>
+              <h2 class="stat-value" id="statOrders">428</h2>
+              <span class="stat-trend positive">↑ 5.1% <span>vs bln lalu</span></span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon rate-icon">🎯</div>
+            <div class="stat-details">
+              <span class="stat-title">Tingkat Konversi</span>
+              <h2 class="stat-value" id="statConversion">3.45%</h2>
+              <span class="stat-trend negative">↓ 0.3% <span>vs bln lalu</span></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-grid" id="analytics">
+          <div class="chart-card main-chart">
+            <div class="chart-header">
+              <div>
+                <h3>Tren Pendapatan & Pengunjung</h3>
+                <p>Pantau performa penjualan berkala</p>
+              </div>
+              <div class="chart-filters">
+                <button class="filter-btn active" data-period="weekly">7 Hari</button>
+                <button class="filter-btn" data-period="monthly">1 Bulan</button>
+                <button class="filter-btn" data-period="yearly">1 Tahun</button>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card side-chart">
+            <div class="chart-header">
+              <div>
+                <h3>Kategori Terlaris</h3>
+                <p>Proporsi penjualan berdasarkan kategori</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent Transactions Table Section -->
+        <section class="table-section" id="orders">
+          <div class="table-header">
+            <div>
+              <h3>Transaksi Terbaru</h3>
+              <p>Daftar transaksi dan status pemesanan terakhir</p>
+            </div>
+            <div class="table-actions">
+              <input type="text" id="tableSearch" class="select-input" placeholder="🔍 Cari transaksi...">
+              <select id="categoryFilter" class="select-input">
+                <option value="all">Semua Kategori</option>
+                <option value="Elektronik">Elektronik</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Makanan">Makanan</option>
+                <option value="Kecantikan">Kecantikan</option>
+              </select>
+              <select id="statusFilter" class="select-input">
+                <option value="all">Semua Status</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Pending">Pending</option>
+                <option value="Dibatalkan">Dibatalkan</option>
+              </select>
+              <button id="btnResetFilter" class="btn-secondary" title="Reset Semua Filter">🔄 Reset</button>
+              <button id="btnExportCSV" class="btn-secondary">📥 Ekspor CSV</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="id">ID Pesanan <span class="sort-icon">↕</span></th>
+                  <th class="sortable" data-sort="customer">Pelanggan <span class="sort-icon">↕</span></th>
+                  <th class="sortable" data-sort="category">Kategori <span class="sort-icon">↕</span></th>
+                  <th class="sortable" data-sort="date">Tanggal <span class="sort-icon">↕</span></th>
+                  <th class="sortable" data-sort="amount">Nominal <span class="sort-icon">↕</span></th>
+                  <th class="sortable" data-sort="status">Status <span class="sort-icon">↕</span></th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="transactionTableBody">
+                <!-- Data populated dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="tableCountDisplay">Menampilkan data...</span>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Tambah Transaksi -->
+  <div class="modal-overlay" id="transactionModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Tambah Transaksi Baru</h3>
+        <button class="btn-close-modal" id="btnCloseModal">✕</button>
+      </div>
+      <form id="transactionForm" class="modal-body">
+        <div class="form-group">
+          <label for="customerName">Nama Pelanggan</label>
+          <input type="text" id="customerName" required placeholder="Contoh: Budi Santoso">
+        </div>
+        <div class="form-group">
+          <label for="category">Kategori Produk</label>
+          <select id="category" required>
+            <option value="Elektronik">Elektronik</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Makanan">Makanan & Minuman</option>
+            <option value="Kecantikan">Kecantikan & Kesehatan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="amount">Nominal (Rp)</label>
+          <input type="number" id="amount" required min="1000" step="1000" placeholder="150000">
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" required>
+            <option value="Selesai">Selesai</option>
+            <option value="Pending">Pending</option>
+            <option value="Dibatalkan">Dibatalkan</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelModal">Batal</button>
+          <button type="submit" class="btn-primary">Simpan Transaksi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
